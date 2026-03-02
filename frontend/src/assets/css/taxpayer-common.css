@@ -1,0 +1,74 @@
+/* Navy Premium Theme & Shimmer Effects */
+
+.font-sarabun {
+    font-family: 'Sarabun', sans-serif;
+}
+
+.text-navy {
+    color: #000047;
+}
+
+.btn-navy {
+    background-color: #000047;
+    color: white;
+}
+
+.btn-navy:hover {
+    background-color: #000066;
+    color: white;
+}
+
+.btn-navy:disabled {
+    background-color: #000047;
+    opacity: 0.65;
+}
+
+.bg-navy-light {
+    background-color: rgba(0, 0, 71, 0.05);
+}
+
+/* Table Enhancements */
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 0, 71, 0.02) !important;
+}
+
+/* Shimmer Loading Animation */
+.skeleton-box {
+    background: #e2e8f0;
+    height: 18px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-box::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0) 0,
+            rgba(255, 255, 255, 0.4) 50%,
+            rgba(255, 255, 255, 0) 100%);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Rotation Animation */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}

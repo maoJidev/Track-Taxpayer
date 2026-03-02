@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบติดตามผู้เสียภาษี ภ.ง.ด.90</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        
+        .container-main {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            border: none;
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+        }
+        
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* Data Table Styles */
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .data-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-table tbody tr:hover {
+            background-color: #f5f7fa;
+        }
+        
+        .badge-filed {
+            background-color: #10b981;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .badge-not-filed {
+            background-color: #ef4444;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #667eea;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+        
+        .pagination-info {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <h1><i class="fas fa-file-invoice"></i> ระบบติดตามผู้เสียภาษี ภ.ง.ด.90</h1>
+
+        <!-- เลือกสำนักงาน -->
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-search"></i> เลือกสำนักงานสรรพากร
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">สำนักงานสรรพากรพื้นที่</label>
+                        <select class="form-select" id="stOfficeSelect" onchange="loadBranches()">
+                            <option value="">-- เลือกสำนักงานพื้นที่ --</option>
+                            <option value="12900000">12900000 - สรรพากรพื้นที่สงขลา 1</option>
+                            <option value="12910000">12910000 - สรรพากรพื้นที่สงขลา 2</option>
+                            <option value="12920000">12920000 - สรรพากรพื้นที่ตรัง</option>
+                            <option value="12930000">12930000 - สรรพากรพื้นที่พัทลุง</option>
+                            <option value="12940000">12940000 - สรรพากรพื้นที่ปัตตานี</option>
+                            <option value="12950000">12950000 - สรรพากรพื้นที่ยะลา</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">สำนักงานสรรพากรพื้นที่สาขา</label>
+                        <select class="form-select" id="ssOfficeSelect">
+                            <option value="">-- เลือกสาขา --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button class="btn btn-search w-100" onclick="loadData()">
+                            <i class="fas fa-search"></i> ค้นหา
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ตารางแสดงข้อมูล -->
+        <div class="card" id="dataCard" style="display: none;">
+            <div class="card-header">
+                <i class="fas fa-table"></i> รายการผู้เสียภาษี ภ.ง.ด.90
+            </div>
+            <div class="card-body p-0">
+                <div id="loadingDiv" class="loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin fa-3x"></i>
+                    <p>กำลังโหลดข้อมูล...</p>
+                </div>
+                
+                <div id="dataTableDiv" style="display: none;">
+                    <div class="pagination-info" id="paginationInfo"></div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ลำดับ</th>
+                                    <th>TIN</th>
+                                    <th>NID</th>
+                                    <th>ชื่อผู้เสียภาษี</th>
+                                    <th>หมู่ที่</th>
+                                    <th>ถนน</th>
+                                    <th>ตำบล/แขวง</th>
+                                    <th>ประเภทกิจการ</th>
+                                    <th>ชื่อร้าน</th>
+                                    <th>สถานะ 2567</th>
+                                    <th>รายได้ 2567</th>
+                                    <th>ค่าใช้จ่าย 2567</th>
+                                    <th>ภาษี 2567</th>
+                                    <th>สถานะ 2568</th>
+                                    <th>รายได้ 2568</th>
+                                    <th>ค่าใช้จ่าย 2568</th>
+                                    <th>ภาษี 2568</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="noDataDiv" class="no-data" style="display: none;">
+                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                    <p>ไม่พบข้อมูล</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ข้อมูลสาขาทั้งหมด
+        const branchesData = {
+            "12900000": [
+                { code: "12900010", name: "สส.เมืองสงขลา" },
+                { code: "12900020", name: "สส.สทิงพระ" },
+                { code: "12900030", name: "สส.จะนะ" },
+                { code: "12900040", name: "สส.นาทวี" },
+                { code: "12900070", name: "สส.ระโนด" },
+                { code: "12900100", name: "สส.สะเดา" },
+                { code: "12900150", name: "สส.สิงหนคร" }
+            ],
+            "12910000": [
+                { code: "12910010", name: "สส.หาดใหญ่" },
+                { code: "12910020", name: "สส.รัตภูมิ" },
+                { code: "12910030", name: "สส.คลองหอยโข่ง" }
+            ],
+            "12920000": [
+                { code: "12920010", name: "สส.เมืองตรัง" },
+                { code: "12920020", name: "สส.กันตัง" },
+                { code: "12920030", name: "สส.ห้วยยอด" }
+            ],
+            "12930000": [
+                { code: "12930010", name: "สส.เมืองพัทลุง" },
+                { code: "12930020", name: "สส.ควนขนุน" }
+            ],
+            "12940000": [
+                { code: "12940010", name: "สส.เมืองปัตตานี" },
+                { code: "12940020", name: "สส.ยะรัง" },
+                { code: "12940030", name: "สส.สายบุรี" }
+            ],
+            "12950000": [
+                { code: "12950010", name: "สส.เมืองยะลา" },
+                { code: "12950020", name: "สส.เบตง" }
+            ]
+        };
+
+        // โหลดสาขาตามพื้นที่ที่เลือก
+        function loadBranches() {
+            const stCode = document.getElementById('stOfficeSelect').value;
+            const ssSelect = document.getElementById('ssOfficeSelect');
+            
+            ssSelect.innerHTML = '<option value="">-- เลือกสาขา --</option>';
+            
+            if (!stCode) {
+                return;
+            }
+            
+            const branches = branchesData[stCode] || [];
+            
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.code;
+                option.textContent = branch.code + ' - ' + branch.name;
+                ssSelect.appendChild(option);
+            });
+        }
+
+        // ฟังก์ชันโหลดข้อมูล
+        async function loadData() {
+            const stCode = document.getElementById('stOfficeSelect').value;
+            const ssCode = document.getElementById('ssOfficeSelect').value;
+            
+            if (!stCode) {
+                alert('กรุณาเลือกสำนักงานพื้นที่');
+                return;
+            }
+            
+            // แสดง card และ loading
+            document.getElementById('dataCard').style.display = 'block';
+            document.getElementById('loadingDiv').style.display = 'block';
+            document.getElementById('dataTableDiv').style.display = 'none';
+            document.getElementById('noDataDiv').style.display = 'none';
+            
+            try {
+                // สร้าง URL สำหรับเรียก API
+                let apiUrl = `http://localhost:8080/taxpayer-track/api/taxpayer90/st/${stCode}/page?page=0&size=50`;
+                
+                if (ssCode) {
+                    // ถ้าเลือกสาขาด้วย ให้กรองตาม SS Office
+                    apiUrl = `http://localhost:8080/taxpayer-track/api/taxpayer90/st/${stCode}/ss/${ssCode}`;
+                }
+                
+                console.log('Calling API:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                console.log('API Response:', data);
+                
+                // ซ่อน loading
+                document.getElementById('loadingDiv').style.display = 'none';
+                
+                // ตรวจสอบข้อมูล
+                let taxpayers = [];
+                let totalCount = 0;
+                
+                if (Array.isArray(data)) {
+                    // ถ้า response เป็น array โดยตรง
+                    taxpayers = data;
+                    totalCount = data.length;
+                } else if (data.content && Array.isArray(data.content)) {
+                    // ถ้า response เป็น pagination object
+                    taxpayers = data.content;
+                    totalCount = data.totalElements || data.content.length;
+                }
+                
+                if (taxpayers.length === 0) {
+                    document.getElementById('noDataDiv').style.display = 'block';
+                    return;
+                }
+                
+                // แสดงข้อมูลใน pagination info
+                document.getElementById('paginationInfo').textContent = 
+                    `พบข้อมูลทั้งหมด ${totalCount} รายการ (แสดง ${taxpayers.length} รายการ)`;
+                
+                // แสดงตาราง
+                displayData(taxpayers);
+                document.getElementById('dataTableDiv').style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                document.getElementById('loadingDiv').style.display = 'none';
+                
+                // แสดงข้อมูลตัวอย่างกรณี API ไม่พร้อม
+                alert('ไม่สามารถเชื่อมต่อ API ได้\nกำลังแสดงข้อมูลตัวอย่าง');
+                displaySampleData();
+                document.getElementById('dataTableDiv').style.display = 'block';
+            }
+        }
+
+        // ฟังก์ชันแสดงข้อมูลในตาราง
+        function displayData(taxpayers) {
+            const tbody = document.getElementById('dataTableBody');
+            tbody.innerHTML = '';
+            
+            taxpayers.forEach((taxpayer, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${taxpayer.tin || '-'}</td>
+                    <td>${taxpayer.nid || '-'}</td>
+                    <td>${taxpayer.taxpayerName || '-'}</td>
+                    <td>${taxpayer.addrMoo || '-'}</td>
+                    <td>${taxpayer.addrStreet || '-'}</td>
+                    <td>${taxpayer.addrTumbon || '-'}</td>
+                    <td>${taxpayer.busType || '-'}</td>
+                    <td>${taxpayer.shopName || '-'}</td>
+                    <td>${formatFileStatus(taxpayer.y67FileStatus)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y67TotInc4018Amt)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y67TotAlwAmt)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y67TotTaxAmt)}</td>
+                    <td>${formatFileStatus(taxpayer.y68FileStatus)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y68TotInc4018Amt)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y68TotAlwAmt)}</td>
+                    <td class="text-end">${formatNumber(taxpayer.y68TotTaxAmt)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ฟังก์ชันแสดงข้อมูลตัวอย่าง (สำหรับทดสอบ)
+        function displaySampleData() {
+            const sampleData = [
+                {
+                    tin: '1234567890',
+                    nid: '1234567890123',
+                    taxpayerName: 'นายทดสอบ ระบบ',
+                    addrMoo: '5',
+                    addrStreet: 'ถนนสุขุมวิท',
+                    addrTumbon: 'ในเมือง',
+                    busType: 'ร้านค้าปลีก',
+                    shopName: 'ร้านสะดวกซื้อ ABC',
+                    y67FileStatus: 1,
+                    y67TotInc4018Amt: 500000,
+                    y67TotAlwAmt: 100000,
+                    y67TotTaxAmt: 50000,
+                    y68FileStatus: 1,
+                    y68TotInc4018Amt: 600000,
+                    y68TotAlwAmt: 120000,
+                    y68TotTaxAmt: 60000
+                },
+                {
+                    tin: '9876543210',
+                    nid: '9876543210987',
+                    taxpayerName: 'บริษัท ตัวอย่าง จำกัด',
+                    addrMoo: '3',
+                    addrStreet: 'ถนนพระราม 4',
+                    addrTumbon: 'คลองตัน',
+                    busType: 'บริการ',
+                    shopName: 'บริษัท ตัวอย่าง',
+                    y67FileStatus: 1,
+                    y67TotInc4018Amt: 1200000,
+                    y67TotAlwAmt: 300000,
+                    y67TotTaxAmt: 120000,
+                    y68FileStatus: 0,
+                    y68TotInc4018Amt: 0,
+                    y68TotAlwAmt: 0,
+                    y68TotTaxAmt: 0
+                },
+                {
+                    tin: '5555555555',
+                    nid: '5555555555555',
+                    taxpayerName: 'ห้างหุ้นส่วนสามัญ XYZ',
+                    addrMoo: '7',
+                    addrStreet: 'ถนนเพชรบุรี',
+                    addrTumbon: 'ถนนเพชรบุรี',
+                    busType: 'ค้าส่ง',
+                    shopName: 'ห้างหุ้นส่วน XYZ',
+                    y67FileStatus: 1,
+                    y67TotInc4018Amt: 800000,
+                    y67TotAlwAmt: 200000,
+                    y67TotTaxAmt: 80000,
+                    y68FileStatus: 1,
+                    y68TotInc4018Amt: 900000,
+                    y68TotAlwAmt: 220000,
+                    y68TotTaxAmt: 90000
+                }
+            ];
+            
+            document.getElementById('paginationInfo').textContent = 
+                `พบข้อมูลทั้งหมด ${sampleData.length} รายการ (ข้อมูลตัวอย่าง)`;
+            
+            displayData(sampleData);
+        }
+
+        // ฟังก์ชันจัดรูปแบบสถานะการยื่น
+        function formatFileStatus(status) {
+            if (status === 1) {
+                return '<span class="badge-filed">ยื่น</span>';
+            } else {
+                return '<span class="badge-not-filed">ไม่ยื่น</span>';
+            }
+        }
+
+        // ฟังก์ชันจัดรูปแบบตัวเลข
+        function formatNumber(value) {
+            if (!value || value === 0) {
+                return '-';
+            }
+            return parseFloat(value).toLocaleString('th-TH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+    </script>
+</body>
+</html>
