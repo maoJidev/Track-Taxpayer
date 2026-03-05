@@ -130,15 +130,39 @@ const TaxpayerList91 = () => {
                                         </div>
                                     </td>
                                 </tr>
-                            ) : (!regionCode && !stCode && !ssCode && !searchQuery) ? (
+                            ) : (!regionCode && !stCode && !ssCode) ? (
                                 <tr>
                                     <td colSpan="8" className="text-center py-5">
                                         <div className="py-4">
                                             <div className="mb-3">
                                                 <span className="material-symbols-outlined text-primary opacity-25" style={{ fontSize: '64px' }}>domain</span>
                                             </div>
-                                            <h5 className="text-navy fw-bold mb-2">กรุณาเลือกสำนักงานสรรพากร</h5>
-                                            <p className="text-muted small mb-0">โปรดเลือก <b>ภาค</b> หรือ <b>พื้นที่</b> เพื่อเริ่มต้นแสดงข้อมูลผู้เสียภาษี (ภ.ง.ด. 91)</p>
+                                            <h5 className="text-navy fw-bold mb-2">กรุณาเลือกสำนักงานสรรพากรก่อนค้นหา</h5>
+                                            <p className="text-muted small mb-0">โปรดเลือก <b>ภาค</b> หรือ <b>พื้นที่</b> เพื่อระบุขอบเขตในการเรียกข้อมูล</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (regionCode && !stCode) ? (
+                                <tr>
+                                    <td colSpan="8" className="text-center py-5">
+                                        <div className="py-4">
+                                            <div className="mb-3">
+                                                <span className="material-symbols-outlined text-warning opacity-25" style={{ fontSize: '64px' }}>location_on</span>
+                                            </div>
+                                            <h5 className="text-navy fw-bold mb-2">โปรดใส่ข้อมูล สำนักงานสรรพากรพื้นที่ (ST)</h5>
+                                            <p className="text-muted small mb-0">กรุณาเลือกสำนักงานพื้นที่เพื่อระบุขอบเขตข้อมูล</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ) : (stCode && !ssCode) ? (
+                                <tr>
+                                    <td colSpan="8" className="text-center py-5">
+                                        <div className="py-4">
+                                            <div className="mb-3">
+                                                <span className="material-symbols-outlined text-warning opacity-25" style={{ fontSize: '64px' }}>storefront</span>
+                                            </div>
+                                            <h5 className="text-navy fw-bold mb-2">โปรดใส่ข้อมูล สำนักงานสรรพากรพื้นที่สาขา (SS)</h5>
+                                            <p className="text-muted small mb-0">กรุณาเลือกสำนักงานสรรพากรพื้นที่สาขาเพื่อแสดงรายการ</p>
                                         </div>
                                     </td>
                                 </tr>

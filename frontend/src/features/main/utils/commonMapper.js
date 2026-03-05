@@ -43,33 +43,22 @@ export const MAPPER_CONFIGS = {
         }
     },
     "90": {
-        "67": {
-            totalIncome: ['txptotassinc4018amtc', 'txpTotAssInc4018AmtC'],
-            totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'],
-            netIncome: ['txpnetincamtc', 'txpNetIncAmtC'],
-            taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'],
-            wht: ['txptotwht4018amt', 'txpTotWht4018Amt']
-        }
+        "67": { totalIncome: ['txptotassinc4018amtc', 'txpTotAssInc4018AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht4018amt', 'txpTotWht4018Amt'] },
+        "66": { totalIncome: ['txptotassinc4018amtc', 'txpTotAssInc4018AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht4018amt', 'txpTotWht4018Amt'] },
+        "65": { totalIncome: ['txptotassinc4018amtc', 'txpTotAssInc4018AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht4018amt', 'txpTotWht4018Amt'] },
+        "64": { totalIncome: ['txptotassinc4018amtc', 'txpTotAssInc4018AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht4018amt', 'txpTotWht4018Amt'] }
     },
     "91": {
-        "67": {
-            totalIncome: ['txptotassinc401amtc', 'txpTotAssInc401AmtC'],
-            totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'],
-            netIncome: ['txpnetincamtc', 'txpNetIncAmtC'],
-            taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'],
-            wht: ['txptotwht401amt', 'txpTotWht401Amt']
-        }
+        "67": { totalIncome: ['txptotassinc401amtc', 'txpTotAssInc401AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht401amt', 'txpTotWht401Amt'] },
+        "66": { totalIncome: ['txptotassinc401amtc', 'txpTotAssInc401AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht401amt', 'txpTotWht401Amt'] },
+        "65": { totalIncome: ['txptotassinc401amtc', 'txpTotAssInc401AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht401amt', 'txpTotWht401Amt'] },
+        "64": { totalIncome: ['txptotassinc401amtc', 'txpTotAssInc401AmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], wht: ['txptotwht401amt', 'txpTotWht401Amt'] }
     },
     "94": {
-        "67": {
-            totalIncome: ['txptotassincamtc', 'txpTotAssIncAmtC'],
-            totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'],
-            netIncome: ['txpnetincamtc', 'txpNetIncAmtC'],
-            taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'],
-            surcharge: ['txpsuramt', 'txpSurAmt'],
-            taxSpec: ['txptaxspecamt', 'txpTaxSpecAmt'],
-            wht: ['txptotwhtamtc', 'txpTotWhtAmtC']
-        }
+        "67": { totalIncome: ['txptotassincamtc', 'txpTotAssIncAmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], surcharge: ['txpsuramt', 'txpSurAmt'], taxSpec: ['txptaxspecamt', 'txpTaxSpecAmt'], wht: ['txptotwhtamtc', 'txpTotWhtAmtC'] },
+        "66": { totalIncome: ['txptotassincamtc', 'txpTotAssIncAmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], surcharge: ['txpsuramt', 'txpSurAmt'] },
+        "65": { totalIncome: ['txptotassincamtc', 'txpTotAssIncAmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], surcharge: ['txpsuramt', 'txpSurAmt'] },
+        "64": { totalIncome: ['txptotassincamtc', 'txpTotAssIncAmtC'], totalAllowance: ['txptotalwamtc', 'txpTotAlwAmtC'], netIncome: ['txpnetincamtc', 'txpNetIncAmtC'], taxSum: ['txptaxsumspecamt', 'txpTaxSumSpecAmt'], surcharge: ['txpsuramt', 'txpSurAmt'] }
     }
 };
 
@@ -166,6 +155,18 @@ export function extractYear(raw) {
 }
 
 /**
+ * Normalize year to 4-digit Thai Year (e.g. 67 -> 2567, 2567 -> 2567)
+ */
+export function toThaiYear(y) {
+    if (!y) return '-';
+    const s = String(y);
+    if (s.length <= 2) return `25${s.padStart(2, '0')}`;
+    if (s.length === 4 && s.startsWith('25')) return s;
+    if (s.length === 4 && parseInt(s) < 2500) return String(parseInt(s) + 543);
+    return s;
+}
+
+/**
  * Generic Enriched Mapper (Internal)
  */
 export function mapEnrichedGeneric(type, baseItem, tpRaw, cmRaw, pndRaw, comparePndRaw = null) {
@@ -199,14 +200,14 @@ export function mapEnrichedGeneric(type, baseItem, tpRaw, cmRaw, pndRaw, compare
     const getIncomeSources = (pnd, type) => {
         if (!pnd) return [];
         const sources = [
-            { category: '40(1)', label: 'เงินเดือน', amount: Number(getVal(pnd, ['txptotassinc401amtc', 'txpAssInc401AmtC', 'assInc401AmtC', 'txpTotAssInc401AmtC']) || 0) },
-            { category: '40(2)', label: 'รับจ้าง/ค่านายหน้า', amount: Number(getVal(pnd, ['txptotassinc402amtc', 'txpAssInc402AmtC', 'assInc402AmtC', 'txpTotAssInc402AmtC']) || 0) },
-            { category: '40(3)', label: 'ค่าลิขสิทธิ์', amount: Number(getVal(pnd, ['txptotassinc403amtc', 'txpAssInc403AmtC', 'assInc403AmtC', 'txpTotAssInc403AmtC']) || 0) },
-            { category: '40(4)', label: 'เงินปันผล', amount: Number(getVal(pnd, ['txptotassinc404amtc', 'txpAssInc404AmtC', 'assInc404AmtC', 'txpTotAssInc404AmtC']) || 0) },
-            { category: '40(5)', label: 'ค่าเช่า', amount: Number(getVal(pnd, ['txptotassinc405amtc', 'txpAssInc405AmtC', 'assInc405AmtC', 'txpTotAssInc405AmtC']) || 0) },
-            { category: '40(6)', label: 'วิชาชีพอิสระ', amount: Number(getVal(pnd, ['txptotassinc406amtc', 'txpAssInc406AmtC', 'assInc406AmtC', 'txpTotAssInc406AmtC']) || 0) },
-            { category: '40(7)', label: 'รับเหมาก่อสร้าง', amount: Number(getVal(pnd, ['txptotassinc407amtc', 'txpAssInc407AmtC', 'assInc407AmtC', 'txpTotAssInc407AmtC']) || 0) },
-            { category: '40(8)', label: 'ธุรกิจอื่นๆ', amount: Number(getVal(pnd, ['txptotassinc408amtc', 'txpAssInc408AmtC', 'assInc408AmtC', 'txpTotAssInc408AmtC']) || 0) }
+            { category: '40(1)', label: 'เงินเดือน', amount: Number(getVal(pnd, ['txptotassinc401amtc', 'txpAssInc401AmtC', 'assInc401AmtC', 'txpTotAssInc401AmtC', 'txptotassinc401amt', 'txpAssInc401Amt', 'assInc401Amt']) || 0) },
+            { category: '40(2)', label: 'รับจ้าง/ค่านายหน้า', amount: Number(getVal(pnd, ['txptotassinc402amtc', 'txpAssInc402AmtC', 'assInc402AmtC', 'txpTotAssInc402AmtC', 'txptotassinc402amt', 'txpAssInc402Amt', 'assInc402Amt']) || 0) },
+            { category: '40(3)', label: 'ค่าลิขสิทธิ์', amount: Number(getVal(pnd, ['txptotassinc403amtc', 'txpAssInc403AmtC', 'assInc403AmtC', 'txpTotAssInc403AmtC', 'txptotassinc403amt', 'txpAssInc403Amt', 'assInc403Amt']) || 0) },
+            { category: '40(4)', label: 'เงินปันผล', amount: Number(getVal(pnd, ['txptotassinc404amtc', 'txpAssInc404AmtC', 'assInc404AmtC', 'txpTotAssInc404AmtC', 'txptotassinc404amt', 'txpAssInc404Amt', 'assInc404Amt']) || 0) },
+            { category: '40(5)', label: 'ค่าเช่า', amount: Number(getVal(pnd, ['txptotassinc405amtc', 'txpAssInc405AmtC', 'assInc405AmtC', 'txpTotAssInc405AmtC', 'txptotassinc405amt', 'txpAssInc405Amt', 'assInc405Amt']) || 0) },
+            { category: '40(6)', label: 'วิชาชีพอิสระ', amount: Number(getVal(pnd, ['txptotassinc406amtc', 'txpAssInc406AmtC', 'assInc406AmtC', 'txpTotAssInc406AmtC', 'txptotassinc406amt', 'txpAssInc406Amt', 'assInc406Amt']) || 0) },
+            { category: '40(7)', label: 'รับเหมาก่อสร้าง', amount: Number(getVal(pnd, ['txptotassinc407amtc', 'txpAssInc407AmtC', 'assInc407AmtC', 'txpTotAssInc407AmtC', 'txptotassinc407amt', 'txpAssInc407Amt', 'assInc407Amt']) || 0) },
+            { category: '40(8)', label: 'ธุรกิจอื่นๆ', amount: Number(getVal(pnd, ['txptotassinc408amtc', 'txpAssInc408AmtC', 'assInc408AmtC', 'txpTotAssInc408AmtC', 'txptotassinc408amt', 'txpAssInc408Amt', 'assInc408Amt']) || 0) }
         ];
 
         // Specific fallback for PND 91: It only has 40(1), which is its total income
@@ -223,11 +224,33 @@ export function mapEnrichedGeneric(type, baseItem, tpRaw, cmRaw, pndRaw, compare
     const finalFiledCount = Math.max(Number(baseItem.filedYearsCount || 0), (income > 0 || tpRaw || pndRaw) ? 1 : 0);
     const finalFiledAllYears = baseItem.filedAllYears || (finalFiledCount >= 4);
 
+    // Extract history from tpRaw if available
+    const history = {};
+    const trackedYears = ['64', '65', '66', '67', '68', '69'];
+    if (tpRaw) {
+        trackedYears.forEach(y => {
+            const inc = getVal(tpRaw, [`y${y}TotInc4018Amt`, `y${y}TotInc401Amt`, `y${y}TotIncAmt`]);
+            const tax = getVal(tpRaw, `y${y}TotTaxAmt`);
+            const alw = getVal(tpRaw, [`y${y}TotAlwAmt`, `y${y}TotAlwAmtC`]);
+
+            if (inc !== null && inc !== undefined) {
+                history[y] = {
+                    year: `25${y}`,
+                    income: Number(inc),
+                    allowance: Number(alw || 0),
+                    tax: Number(tax || 0),
+                    status: getVal(tpRaw, `y${y}FileStatus`) || 'ยื่นแล้ว'
+                };
+            }
+        });
+    }
+
     const mergedItem = {
         ...baseItem,
+        history,
         tin: pickBest(getVal(tpRaw, ['txptin', 'tcltxptin']), getVal(cmRaw, ['txptin', 'tin']), getVal(pndRaw, 'txptin'), baseItem.tin),
         branch: pickBest(getVal(cmRaw, 'subid'), getVal(tpRaw, 'subid'), baseItem.branch),
-        recNo: pickBest(getVal(cmRaw, 'recno'), getVal(pndRaw, 'recno'), baseItem.recNo),
+        recNo: pickBest(getVal(cmRaw, ['recno', 'recNo']), getVal(pndRaw, ['recno', 'recNo']), baseItem.recNo),
         pndGroup: pickBest(getVal(cmRaw, ['pndgroup', 'pndGroup', 'pnd_group']), getVal(pndRaw, ['pndgroup', 'pndGroup']), baseItem.pndGroup),
         filedYearsCount: finalFiledCount,
         filedAllYears: finalFiledAllYears,
@@ -237,16 +260,19 @@ export function mapEnrichedGeneric(type, baseItem, tpRaw, cmRaw, pndRaw, compare
         business: {
             ...baseItem.business,
             shopName: pickBest(getVal(cmRaw, ['addrshoptext', 'shopName']), getVal(tpRaw, 'txpshopname'), baseItem.business?.shopName),
-            type: pickBest(getVal(cmRaw, ['bustype', 'busType']), getVal(pndRaw, 'bustype'), baseItem.business?.type),
-            isicCode: pickBest(getVal(cmRaw, 'isiccode'), baseItem.business?.isicCode),
-            isicName: pickBest(getVal(cmRaw, 'isicname'), baseItem.business?.isicName),
-            vatStatus: pickBest(getVal(cmRaw, 'vatstatus'), baseItem.business?.vatStatus)
+            type: pickBest(getVal(cmRaw, ['bustype', 'busType']), getVal(pndRaw, ['bustype', 'busType']), baseItem.business?.type),
+            isicCode: pickBest(getVal(cmRaw, ['isiccode', 'isicCode']), getVal(pndRaw, ['isiccode', 'isicCode']), baseItem.business?.isicCode),
+            isicName: pickBest(getVal(cmRaw, ['isicname', 'isicName']), getVal(pndRaw, ['isicname', 'isicName']), baseItem.business?.isicName),
+            vatStatus: pickBest(getVal(cmRaw, ['vatstatus', 'vatStatus']), baseItem.business?.vatStatus)
         },
         ops: {
             ...baseItem.ops,
-            regionCode: pickBest(getVal(cmRaw, ['regionalofficecode', 'regionOfficeCode']), baseItem.ops?.regionCode),
-            stCode: pickBest(getVal(cmRaw, ['stofficecode', 'stOfficeCode']), baseItem.ops?.stCode),
-            ssCode: pickBest(getVal(cmRaw, ['ssofficecode', 'ssOfficeCode']), baseItem.ops?.ssCode),
+            regionCode: pickBest(getVal(cmRaw, ['regionalofficecode', 'regionOfficeCode', 'regioncode', 'regionCode']), getVal(pndRaw, ['regionalofficecode', 'regionOfficeCode', 'regioncode', 'regionCode']), baseItem.ops?.regionCode),
+            stCode: pickBest(getVal(cmRaw, ['stofficecode', 'stOfficeCode', 'stcode', 'stCode']), getVal(pndRaw, ['stofficecode', 'stOfficeCode', 'stcode', 'stCode']), baseItem.ops?.stCode),
+            ssCode: pickBest(getVal(cmRaw, ['ssofficecode', 'ssOfficeCode', 'sscode', 'ssCode']), getVal(pndRaw, ['ssofficecode', 'ssOfficeCode', 'sscode', 'ssCode']), baseItem.ops?.ssCode),
+            regionName: baseItem.ops?.regionName,
+            stName: baseItem.ops?.stName,
+            ssName: baseItem.ops?.ssName,
             team: pickBest(getVal(cmRaw, 'team'), getVal(tpRaw, 'team'), baseItem.ops?.team),
             subteam: pickBest(getVal(cmRaw, 'subteam'), getVal(tpRaw, 'subteam'), baseItem.ops?.subteam),
         },
@@ -267,12 +293,12 @@ export function mapEnrichedGeneric(type, baseItem, tpRaw, cmRaw, pndRaw, compare
                 totalIncome: income || undefined,
                 totalAllowance: Number(getVal(pndRaw, config.totalAllowance) || 0),
                 netIncome: Number(getVal(pndRaw, config.netIncome) || 0),
-                netTax: Number(getVal(pndRaw, ['txpNetTaxAmt', 'txpnettaxamt']) || getVal(tpRaw, MAPPER_CONFIGS.common.financials.tax) || 0),
+                netTax: Number(getVal(pndRaw, ['txpNetTaxAmt', 'txpnettaxamt', 'txptaxamt', 'txpTaxAmt', 'txptottaxamt', 'txpTotTaxAmt']) || getVal(tpRaw, MAPPER_CONFIGS.common.financials.tax) || 0),
                 taxPayable: Number(getVal(pndRaw, config.taxSum) || getVal(tpRaw, MAPPER_CONFIGS.common.financials.pay) || 0),
                 surcharge: Number(getVal(pndRaw, config.surcharge) || getVal(tpRaw, MAPPER_CONFIGS.common.financials.surcharge) || 0),
                 penCrimAmt: Number(getVal(pndRaw, 'txpPenCrimAmt') || getVal(tpRaw, 'txpPenCrimAmt') || 0),
                 taxSpec: type === '94' ? Number(getVal(pndRaw, config.taxSpec) || 0) : undefined,
-                whtAmount: type === '94' ? Number(getVal(pndRaw, config.wht) || 0) : undefined,
+                whtAmount: Number(getVal(pndRaw, [config.wht, 'txptotwhtamtc', 'txpwhtamt', 'txpwht']) || 0),
                 addTaxAmt: Number(getVal(pndRaw, ['txpAddTaxAmt', 'txpaddtaxamt']) || 0)
             },
             incomeSources: type === '90' || type === '91' ? getIncomeSources(pndRaw, type) : [],

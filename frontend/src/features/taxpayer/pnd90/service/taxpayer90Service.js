@@ -1,11 +1,10 @@
 import {
     fetchTaxpayerPage,
     fetchTaxpayerByNid,
-    fetchTaxpayerByKeyword
+    fetchSearchByKeyword
 } from "../../../main/api/Mainlist";
 import {
     fetchPND90ByNid,
-    fetchSearchByKeyword,
     fetchPND90ByMinTax,
     fetchPND90ByTinNidName,
     fetchPND90SearchLegacy,
@@ -78,23 +77,34 @@ export const Taxpayer90Service = {
         const isNid = /^\d{13}$/.test(cleanQuery);
 
         try {
-            let raw;
+            let result;
             if (isNid) {
-                // For 90 Search, we can use the PND 90 specific Vision API
-                raw = await fetchPND90ByNid(cleanQuery, year);
+                // For NID results, use the specific Vision API
+                const raw = await fetchPND90ByNid(cleanQuery, year);
+                const rawList = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+                const mappedItems = rawList.map(item => mapPND90ReportItem(item, year));
+                result = {
+                    content: mappedItems,
+                    totalElements: mappedItems.length,
+                    totalPages: 1,
+                    isSearch: true
+                };
             } else {
-                raw = await fetchPND90SearchLegacy(query, year);
+                // For names, use the new auth API which supports flexible searching
+                const raw = await fetchSearchByKeyword(query, {
+                    stCode: stCode || undefined,
+                    page: 0,
+                    size: 100
+                });
+                const rawList = raw.content || [];
+                const mappedItems = rawList.map(item => mapTaxpayer90OfficialItem(item, year));
+                result = {
+                    content: mappedItems,
+                    totalElements: raw.totalElements || mappedItems.length,
+                    totalPages: raw.totalPages || 1,
+                    isSearch: true
+                };
             }
-
-            const rawList = Array.isArray(raw) ? raw : (raw ? [raw] : []);
-            const mappedItems = rawList.map(item => mapPND90ReportItem(item, year));
-
-            const result = {
-                content: mappedItems,
-                totalElements: mappedItems.length,
-                totalPages: 1,
-                isSearch: true
-            };
             cacheStore.searches.set(cacheKey, result);
             UnifiedService.saveCache();
             return result;

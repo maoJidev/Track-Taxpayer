@@ -1,7 +1,7 @@
 import {
     fetchTaxpayerPage,
     fetchTaxpayerByNid,
-    fetchTaxpayerByKeyword
+    fetchSearchByKeyword
 } from "../../../main/api/Mainlist";
 import {
     fetchPND94ByNid,
@@ -82,23 +82,37 @@ export const Taxpayer94Service = {
         }
 
         try {
-            let raw;
+            let result;
             if (isNid) {
-                raw = await fetchPND94ByNid(cleanQuery, year, officeParams).catch(() => null);
+                // สำหรับ NID (เลข 13 หลัก) ให้ใช้ Vision API เดิม
+                const raw = await fetchPND94ByNid(cleanQuery, year, officeParams).catch(() => null);
+                const rawList = Array.isArray(raw) ? raw : (raw ? [raw] : []);
+                const mappedItems = rawList.map(item => mapPND94ListItem(item));
+
+                result = {
+                    content: mappedItems,
+                    totalElements: mappedItems.length,
+                    totalPages: 1,
+                    isSearch: true
+                };
             } else {
-                raw = await fetchPND94Search(query, year, officeParams).catch(() => null);
+                // สำหรับการค้นหาด้วยชื่อ/คำค้นหาอื่นๆ ให้ใช้ Unified Search API (Centralized)
+                const raw = await fetchSearchByKeyword(query, {
+                    stCode: stCode || undefined,
+                    page: 0,
+                    size: 100
+                });
+                const rawList = raw.content || [];
+                // ใช้ Mapper ของ PND 90 Official เพื่อแปลงข้อมูลที่ได้จาก Search API
+                const mappedItems = rawList.map(item => mapTaxpayer90OfficialItem(item, year));
+
+                result = {
+                    content: mappedItems,
+                    totalElements: raw.totalElements || mappedItems.length,
+                    totalPages: raw.totalPages || 1,
+                    isSearch: true
+                };
             }
-
-            const rawList = Array.isArray(raw) ? raw : (raw ? [raw] : []);
-
-            const mappedItems = rawList.map(item => mapPND94ListItem(item));
-
-            const result = {
-                content: mappedItems,
-                totalElements: mappedItems.length,
-                totalPages: 1,
-                isSearch: true
-            };
             cacheStore.searches.set(cacheKey, result);
             UnifiedService.saveCache();
             return result;

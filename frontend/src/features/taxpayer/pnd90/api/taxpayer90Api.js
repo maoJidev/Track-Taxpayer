@@ -44,19 +44,7 @@ export async function fetchPND90SearchLegacy(keyword, year = "67", params = {}) 
     return response.data;
 }
 
-export async function fetchSearchByKeyword(keyword, params = {}) {
-    const { page = 0, size = 20, stCode } = params;
-    const query = { keyword, page, size };
-    let url = '/api/taxpayer90/search'; // กำหนด URL พื้นฐานสำหรับการค้นหาทั่วไป
-
-    // หากมีการระบุรหัสสำนักงานพื้นที่ (stCode) ให้สลับไปใช้ Path ค้นหาระดับพื้นที่
-    if (stCode) {
-        url = `/api/taxpayer90/st/${stCode}/search`;
-    }
-
-    const response = await authApiClient.get(url, { params: query });
-    return response.data;
-}
+// ภ.ง.ด. 90 Search API is now centralized in Mainlist.js as fetchSearchByKeyword
 
 // ดึงรายละเอียดข้อมูลผู้เสียภาษี (Taxpayer Info) จาก DLN
 export async function fetchPND90DetailTaxpayer(dln, year = "67") {

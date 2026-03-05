@@ -38,8 +38,18 @@ export async function fetchTaxpayerByNid(nid, year = "67") {
 }
 
 
-export async function fetchTaxpayerByKeyword(keyword, year = "67") {
-    if (!keyword) return [];
-    const response = await apiClient.get(`/api/pnd90/${year}/taxpayer/search/${encodeURIComponent(keyword)}`);
+export async function fetchSearchByKeyword(keyword, params = {}) {
+    if (!keyword) return { content: [], totalElements: 0, totalPages: 0 };
+
+    const { page = 0, size = 50, stCode } = params;
+    const query = { keyword, page, size };
+    let url = '/api/taxpayer90/search';
+
+    // หากมีการระบุรหัสสำนักงานพื้นที่ (stCode) ให้สลับไปใช้ Path ค้นหาระดับพื้นที่
+    if (stCode) {
+        url = `/api/taxpayer90/st/${stCode}/search`;
+    }
+
+    const response = await authApiClient.get(url, { params: query });
     return response.data;
 }

@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { UnifiedService as TaxpayerService } from '../../features/main/services/unifiedService';
 import { decodeParam } from '../../features/main/utils/urlUtils';
+import { toThaiYear } from '../../features/main/utils/commonMapper';
 import { User, MapPin, FileText, ChevronLeft, Printer, AlertCircle, Bookmark, ExternalLink, RefreshCw, TrendingUp, TrendingDown, Minus, Briefcase, Users, LayoutGrid, Activity } from 'lucide-react';
 import RiskAssessment from '../../features/taxpayer/components/RiskAssessment';
+import TaxpayerNotFound from '../../features/main/components/TaxpayerNotFound';
 
 const TaxpayerDetail91 = () => {
     const { taxId: taxIdParam, dln: dlnParam, year: yearParamUrl } = useParams();
@@ -22,7 +24,7 @@ const TaxpayerDetail91 = () => {
         year = '67';
     }
 
-    const [compareYear, setCompareYear] = useState(String(parseInt(year || "67") - 1));
+    const [compareYear, setCompareYear] = useState(null);
 
     const formatCurrency = (val) => {
         return (val || 0).toLocaleString('th-TH', {
@@ -38,12 +40,18 @@ const TaxpayerDetail91 = () => {
             return;
         }
 
+        console.log(`[Detail91] Loading data for Tax ID: ${taxId}, Year: ${year}, CompareYear: ${compareYear}`);
         setLoading(true);
         setError(null);
         try {
             const basicItem = { taxId, dln };
             const enriched = await TaxpayerService.getUnifiedProfile(basicItem, force, year, compareYear, '91');
+            console.log(`[Detail91] Successfully loaded data for years: ${enriched.standard?.year} vs ${enriched.risks?.compareYear}`);
             setData(enriched);
+
+            if (!compareYear && enriched.risks?.compareYear) {
+                setCompareYear(enriched.risks.compareYear);
+            }
         } catch (err) {
             console.error("Load 91 Detail Error:", err);
             setError(err.message || "ไม่สามารถดึงข้อมูลรายละเอียดได้ในขณะนี้");
@@ -53,7 +61,7 @@ const TaxpayerDetail91 = () => {
     };
 
     useEffect(() => {
-        setCompareYear(String(parseInt(year || "67") - 1));
+        setCompareYear(null);
     }, [year]);
 
     useEffect(() => {
@@ -68,20 +76,11 @@ const TaxpayerDetail91 = () => {
     );
 
     if (error) return (
-        <div className="container mt-5 text-center font-sarabun">
-            <div className="alert alert-danger shadow-sm p-4 d-inline-block">
-                <h4 className="alert-heading fw-bold mb-2">เกิดข้อผิดพลาด</h4>
-                <p className="mb-4">{error}</p>
-                <div className="d-flex gap-2 justify-content-center">
-                    <button className="btn btn-navy px-4" onClick={loadData}>
-                        <RefreshCw size={18} className="me-2" /> ลองใหม่
-                    </button>
-                    <button className="btn btn-outline-danger px-4" onClick={() => navigate(-1)}>
-                        ย้อนกลับ
-                    </button>
-                </div>
-            </div>
-        </div>
+        <TaxpayerNotFound
+            taxId={taxId}
+            error={error}
+            onRetry={loadData}
+        />
     );
 
     if (!data) return null;
@@ -154,7 +153,7 @@ const TaxpayerDetail91 = () => {
                         <div className="col-md-12">
                             <div className="d-flex align-items-center gap-2 mb-2 opacity-75">
                                 <span className="badge bg-white text-navy px-2 py-1">{standard.formCode || 'ภ.ง.ด. 91'}</span>
-                                <small className="fw-bold">ปีภาษี {standard.year || year}</small>
+                                <small className="fw-bold">ปีภาษี {toThaiYear(standard.year || year)}</small>
                             </div>
                             <h1 className="display-6 fw-bold mb-1">{standard.name}</h1>
                             <div className="d-flex flex-wrap align-items-center gap-3 opacity-75 fs-5">
@@ -232,19 +231,19 @@ const TaxpayerDetail91 = () => {
                                     <div className="col-sm-4">
                                         <div className="p-2 bg-light bg-opacity-50 rounded text-center">
                                             <div className="text-secondary small fw-bold">ภาค (Region)</div>
-                                            <div className="fw-bold">{data.ops?.regionCode || '-'}</div>
+                                            <div className="fw-bold">{data.ops?.regionName || data.ops?.regionCode || '-'}</div>
                                         </div>
                                     </div>
                                     <div className="col-sm-4">
                                         <div className="p-2 bg-light bg-opacity-50 rounded text-center">
                                             <div className="text-secondary small fw-bold">พื้นที่ (ST)</div>
-                                            <div className="fw-bold">{data.ops?.stCode || '-'}</div>
+                                            <div className="fw-bold">{data.ops?.stName || data.ops?.stCode || '-'}</div>
                                         </div>
                                     </div>
                                     <div className="col-sm-4">
                                         <div className="p-2 bg-light bg-opacity-50 rounded text-center">
                                             <div className="text-secondary small fw-bold">สาขา (SS)</div>
-                                            <div className="fw-bold">{data.ops?.ssCode || '-'}</div>
+                                            <div className="fw-bold">{data.ops?.ssName || data.ops?.ssCode || '-'}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -304,7 +303,7 @@ const TaxpayerDetail91 = () => {
                                                 <span className="text-secondary small">ที่อยู่ปัจจุบัน</span>
                                                 {standard.address && standard.address !== '-' && (
                                                     <a
-                                                        href={`https://www.google.com/maps?q=${encodeURIComponent(standard.address)}`}
+                                                        href={data.latLong ? `https://www.google.com/maps?q=${data.latLong}` : `https://www.google.com/maps?q=${encodeURIComponent(standard.address)}`}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-primary small text-decoration-none d-flex align-items-center"
@@ -362,8 +361,8 @@ const TaxpayerDetail91 = () => {
                                             disabled={loading}
                                         >
                                             {[1, 2, 3].map(diff => {
-                                                const y = parseInt(year || "67") - diff;
-                                                return <option key={y} value={String(y)}>25{y}</option>;
+                                                const y = parseInt(standard.year || year || "67") - diff;
+                                                return <option key={y} value={String(y)}>{toThaiYear(y)}</option>;
                                             })}
                                         </select>
                                     </div>
@@ -382,14 +381,15 @@ const TaxpayerDetail91 = () => {
                                 <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
                                     <LayoutGrid size={20} className="me-2" /> ประวัติการยื่นแบบรายปี (Official Data)
                                 </h5>
-                                <div className="table-responsive rounded-3 border bg-white overflow-hidden shadow-sm">
-                                    <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.85rem' }}>
+                                <div className="table-responsive rounded-3 border bg-white shadow-sm">
+                                    <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.8rem' }}>
                                         <thead className="bg-navy text-white">
                                             <tr>
-                                                <th className="py-3 px-3">ปีภาษี</th>
-                                                <th className="py-3 px-3 text-end">เงินได้</th>
-                                                <th className="py-3 px-3 text-end">ภาษีที่ชำระ</th>
-                                                <th className="py-3 px-3 text-center">สถานะ</th>
+                                                <th className="py-2 px-2 text-center" style={{ width: '80px' }}>ปีภาษี</th>
+                                                <th className="py-2 px-2 text-end">เงินได้</th>
+                                                <th className="py-2 px-2 text-end">ค่าลดหย่อน</th>
+                                                <th className="py-2 px-2 text-end">ภาษีที่ชำระ</th>
+                                                <th className="py-2 px-2 text-center" style={{ width: '120px' }}>สถานะ</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -397,11 +397,12 @@ const TaxpayerDetail91 = () => {
                                                 const record = data.history[yr];
                                                 return (
                                                     <tr key={yr}>
-                                                        <td className="px-3 py-3 fw-bold">{record.year}</td>
-                                                        <td className="px-3 py-3 text-end font-monospace">{formatCurrency(record.income)}</td>
-                                                        <td className="px-3 py-3 text-end font-monospace text-navy fw-bold">{formatCurrency(record.tax)}</td>
-                                                        <td className="px-3 py-3 text-center">
-                                                            <span className={`badge ${record.income > 0 ? 'bg-success bg-opacity-10 text-success border border-success' : 'bg-light text-muted border'}`}>
+                                                        <td className="px-2 py-2 text-center fw-bold">{record.year}</td>
+                                                        <td className="px-2 py-2 text-end font-monospace">{formatCurrency(record.income)}</td>
+                                                        <td className="px-2 py-2 text-end font-monospace text-secondary">{formatCurrency(record.allowance)}</td>
+                                                        <td className="px-2 py-2 text-end font-monospace text-navy fw-bold">{formatCurrency(record.tax)}</td>
+                                                        <td className="px-2 py-2 text-center">
+                                                            <span className={`badge ${record.income > 0 ? 'bg-success bg-opacity-10 text-success border border-success' : 'bg-light text-muted border'} w-100`}>
                                                                 {record.income > 0 ? 'ยื่นแบบแล้ว' : 'ไม่พบข้อมูล'}
                                                             </span>
                                                         </td>
@@ -427,9 +428,9 @@ const TaxpayerDetail91 = () => {
                                     <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.82rem' }}>
                                         <thead className="bg-light">
                                             <tr>
-                                                <th className="py-2 px-3 text-secondary small border-0">ประเภท</th>
-                                                <th className="py-2 px-3 text-end text-secondary small border-0 text-nowrap">ปี 25{compareYear}</th>
-                                                <th className="py-2 px-3 text-end text-secondary small border-0 text-nowrap">ปี 25{year}</th>
+                                                <th className="py-2 px-3 text-secondary small border-0">รายการ</th>
+                                                <th className="py-2 px-3 text-end text-secondary small border-0 text-nowrap">ปี {toThaiYear(data.risks?.compareYear)}<br /><span className="x-small opacity-50 fw-normal">(ปีที่เทียบ)</span></th>
+                                                <th className="py-2 px-3 text-end text-secondary small border-0 text-nowrap">ปี {toThaiYear(standard.year)}<br /><span className="x-small opacity-50 fw-normal">(ปีหลักจาก DLN)</span></th>
                                                 <th className="py-2 px-3 text-center text-secondary small border-0">เปลี่ยนแปลง</th>
                                             </tr>
                                         </thead>

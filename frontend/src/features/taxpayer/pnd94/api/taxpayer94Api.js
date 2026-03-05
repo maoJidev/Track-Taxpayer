@@ -1,9 +1,16 @@
-import apiClient from "../../../main/services/client";
+import apiClient, { authApiClient } from "../../../main/services/client";
 
 // APIs สำหรับระบบ ภ.ง.ด. 94
 // ดึงรายการผู้ที่ยื่น ภ.ง.ด. 94 แต่ยังไม่ได้ยื่น ภ.ง.ด. 90 (จากระบบ Tracking)
 export async function fetchPND94SentNotPND90List(year = "67", params = {}) {
     const response = await apiClient.get(`/api/pnd94/${year}/sent94not90list`, { params });
+    return response.data;
+}
+
+// APIs สำหรับระบบ Tracking (จาก port 8081)
+export async function fetchTaxpayer94ByNid(nid) {
+    if (!nid || nid === '-') return null;
+    const response = await authApiClient.get(`/api/taxpayer94/search/nid/${nid}`);
     return response.data;
 }
 

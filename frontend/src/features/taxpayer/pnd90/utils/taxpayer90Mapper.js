@@ -21,9 +21,11 @@ export function mapTaxpayer90OfficialItem(raw, targetYear = '67') {
     let totalTaxSum = 0;
 
     trackedYears.forEach(y => {
-        const inc = getVal(raw, `y${y}TotInc4018Amt`);
+        const inc = getVal(raw, [`y${y}TotInc4018Amt`, `y${y}TotInc401Amt`, `y${y}TotIncAmt`]);
         const tax = getVal(raw, `y${y}TotTaxAmt`);
-        if ((inc !== null && inc !== undefined && inc !== 0) || (tax !== null && tax !== undefined && tax !== 0)) {
+        const alw = getVal(raw, [`y${y}TotAlwAmt`, `y${y}TotAlwAmtC`]);
+
+        if (inc !== null && inc !== undefined && inc !== 0) {
             filedCount++;
             totalTaxSum += Number(tax || 0);
         }
@@ -32,9 +34,9 @@ export function mapTaxpayer90OfficialItem(raw, targetYear = '67') {
             history[y] = {
                 year: `25${y}`,
                 income: Number(inc),
-                allowance: Number(getVal(raw, `y${y}TotAlwAmt`) || 0),
-                tax: Number(getVal(raw, `y${y}TotTaxAmt`) || 0),
-                status: getVal(raw, `y${y}FileStatus`) || 'N/A'
+                allowance: Number(alw || 0),
+                tax: Number(tax || 0),
+                status: getVal(raw, `y${y}FileStatus`) || 'ยื่นแล้ว'
             };
         }
     });

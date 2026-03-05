@@ -15,7 +15,8 @@ import {
 import {
     fetchPND91DetailTaxpayer,
     fetchPND91DetailCommon,
-    fetchPND91DetailPnd
+    fetchPND91DetailPnd,
+    fetchTaxpayer91ByNid
 } from "../../taxpayer/pnd91/api/taxpayer91Api";
 import {
     fetchPND94ByNid,
@@ -23,12 +24,14 @@ import {
     fetchPND94DetailCommon,
     fetchPND94DetailPnd,
     fetchPND94SentNot90Status,
-    fetchPND94HasNid
+    fetchPND94HasNid,
+    fetchTaxpayer94ByNid
 } from "../../taxpayer/pnd94/api/taxpayer94Api";
 import {
     getVal,
     mapEnrichedGeneric
 } from "../utils/commonMapper";
+import { OfficeService } from "./officeService";
 import {
     mapPND90ReportItem,
     mapPND90Enriched,
@@ -152,8 +155,10 @@ export const UnifiedService = {
         }
 
         const effectiveYear = year || pnd90Item.year || "67";
-        const finalCompareYear = compareYear || String(parseInt(effectiveYear) - 1);
-        const cacheKey = `${taxId}_unified_${effectiveYear}_vs_${finalCompareYear}_${formType}`;
+        // If compareYear is provided explicitly (e.g. from UI selector), use it.
+        // Otherwise, we will calculate it later after we know the actualYear from the fallback loop.
+        const explicitCompareYear = compareYear;
+        const cacheKey = `${taxId}_unified_${effectiveYear}_vs_${explicitCompareYear || 'fallback'}_${formType}`;
 
         if (force) {
             cacheStore.unified.delete(cacheKey);
@@ -163,47 +168,96 @@ export const UnifiedService = {
 
         try {
             let activeDln = dln;
+            let actualYear = effectiveYear;
+            let tp, cm, pnd;
+            let nidData = null;
 
-            if ((!activeDln || activeDln === '-') && taxId) {
+            // --- เริ่มต้นระบบ Loop ถอยหลังเพื่อหาข้อมูลปีล่าสุดที่มี (Fallback Loop) ---
+            const startYear = parseInt(effectiveYear);
+            const minYear = 65; // ค้นหาถอยหลังถึงปี 65 (2565) ตามที่ผู้ใช้กำหนด
+            let foundData = false;
+            let yearsFiledCount = 0;
+
+            for (let currentYear = startYear; currentYear >= minYear; currentYear--) {
+                const yearStr = String(currentYear).padStart(2, '0');
+                // console.log(`[UnifiedService] Checking data for ${taxId} in year ${yearStr}...`);
+
                 try {
-                    let nidData;
+                    // 1. ค้นหาเลขที่เอกสาร (DLN) จาก NID ในปีนั้นๆ
+                    let currentNidData;
                     if (formType === '91') {
-                        nidData = await fetchPND91ByNid(taxId, effectiveYear);
+                        currentNidData = await fetchPND91ByNid(taxId, yearStr);
                     } else if (formType === '94') {
-                        nidData = await fetchPND94ByNid(taxId, effectiveYear);
+                        currentNidData = await fetchPND94ByNid(taxId, yearStr);
                     } else {
-                        nidData = await fetchPND90ByNid(taxId, effectiveYear);
+                        currentNidData = await fetchPND90ByNid(taxId, yearStr);
                     }
 
-                    let firstMatch = Array.isArray(nidData) ? nidData[0] : nidData;
+                    let firstMatch = Array.isArray(currentNidData) ? currentNidData[0] : currentNidData;
                     let foundDln = getVal(firstMatch, ['dln', 'DLN']);
 
-                    // กรณีสำรอง: หาก 91/94 ไม่พบเลขที่เอกสาร (DLN) ให้ลองค้นหาจาก 90 ซึ่งเป็นแหล่งข้อมูลพื้นฐานหลัก
+                    // กรณีสำรอง: หากไม่พบในระบบที่ระบุ ให้ลองหาใน PND 90 (ฐานข้อมูลหลัก)
                     if (!foundDln && (formType === '91' || formType === '94')) {
-                        console.log(`[UnifiedService] No DLN found for PND ${formType}, falling back to PND 90 lookup for NID: ${taxId}`);
-                        const fallbackData = await fetchPND90ByNid(taxId, effectiveYear).catch(() => null);
+                        const fallbackData = await fetchPND90ByNid(taxId, yearStr).catch(() => null);
                         if (fallbackData) {
                             firstMatch = Array.isArray(fallbackData) ? fallbackData[0] : fallbackData;
                             foundDln = getVal(firstMatch, ['dln', 'DLN']);
                         }
                     }
 
-                    if (foundDln) activeDln = foundDln;
-                } catch (lookupErr) {
-                    console.warn(`[UnifiedService] DLN lookup failed for PND ${formType}: ${lookupErr.message}`);
-                    // Second Fallback Attempt if lookup itself crashed (e.g. 404)
-                    if (formType === '94' || formType === '91') {
-                        try {
-                            const fallbackData = await fetchPND90ByNid(taxId, effectiveYear);
-                            const firstMatch = Array.isArray(fallbackData) ? fallbackData[0] : fallbackData;
-                            const foundDln = getVal(firstMatch, ['dln', 'DLN']);
-                            if (foundDln) activeDln = foundDln;
-                        } catch (fError) {
-                            console.warn(`[UnifiedService] Final fallback to PND 90 also failed: ${fError.message}`);
+                    if (foundDln) {
+                        // 2. หากเจอ DLN ให้ลองดึงข้อมูลรายละเอียด (Common/PND Detail) เพื่อยืนยันว่ามีข้อมูลจริงๆ
+                        const isPnd94InYear = foundDln.startsWith('ภงด94');
+                        const isPnd91InYear = foundDln.startsWith('ภงด91');
+
+                        const yearFetchPromises = isPnd94InYear ? [
+                            fetchPND94DetailTaxpayer(foundDln, yearStr),
+                            fetchPND94DetailCommon(foundDln, yearStr),
+                            fetchPND94DetailPnd(foundDln, yearStr)
+                        ] : isPnd91InYear ? [
+                            fetchPND91DetailTaxpayer(foundDln, yearStr),
+                            fetchPND91DetailCommon(foundDln, yearStr),
+                            fetchPND91DetailPnd(foundDln, yearStr)
+                        ] : [
+                            fetchPND90DetailTaxpayer(foundDln, yearStr),
+                            fetchPND90DetailCommon(foundDln, yearStr),
+                            fetchPND90DetailPnd(foundDln, yearStr)
+                        ];
+
+                        const [rawTp, rawCm, rawPnd] = await Promise.all(yearFetchPromises.map(p => p.catch(() => null)));
+
+                        if (rawTp || rawCm || rawPnd) {
+                            yearsFiledCount++;
+                            if (!foundData) {
+                                activeDln = foundDln;
+                                actualYear = yearStr;
+                                tp = Array.isArray(rawTp) ? rawTp[0] : rawTp;
+                                cm = Array.isArray(rawCm) ? rawCm[0] : rawCm;
+                                pnd = Array.isArray(rawPnd) ? rawPnd[0] : rawPnd;
+                                foundData = true;
+                                console.log(`[UnifiedService] Primary data found in year ${yearStr}`);
+                            }
                         }
                     }
+                } catch (yearErr) {
+                    console.warn(`[UnifiedService] No data in year ${yearStr}: ${yearErr.message}`);
                 }
             }
+
+            if (!foundData) {
+                throw new Error(`ไม่พบข้อมูลของผู้เสียภาษี (ตรวจสอบตั้งแต่ปี 25${startYear} ถึง 25${minYear})`);
+            }
+
+
+            // กฎเหล็ก: ปีที่เปรียบเทียบ (Compare) ต้องน้อยกว่าปีหลัก (Actual) เสมอ เพื่อป้องกัน UI มึนงง
+            let finalCompareYear = explicitCompareYear || String(parseInt(actualYear) - 1);
+
+            if (finalCompareYear === actualYear) {
+                console.log(`[UnifiedService] Fallback: Compare year was same as actual (${actualYear}). decrementing.`);
+                finalCompareYear = String(parseInt(actualYear) - 1);
+            }
+
+            console.log(`[UnifiedService] Final Years: Base=${actualYear}, Compare=${finalCompareYear}`);
 
             let compareDln = null;
             let comparePnd = null;
@@ -237,49 +291,15 @@ export const UnifiedService = {
                 }
             }
 
-            if (!activeDln || activeDln === '-') {
-                throw new Error(`ไม่พบเลขที่เอกสาร (DLN) สำหรับผู้เสียภาษีรายนี้ในปี ${effectiveYear} (NID: ${taxId})`);
-            }
-
             const isPnd94 = activeDln.startsWith('ภงด94');
             const isPnd91 = activeDln.startsWith('ภงด91');
 
-            let tp, cm, pnd;
-            if (isPnd94) {
-                const [rawTp, rawCm, rawPnd] = await Promise.all([
-                    fetchPND94DetailTaxpayer(activeDln, effectiveYear).catch(() => null),
-                    fetchPND94DetailCommon(activeDln, effectiveYear).catch(() => null),
-                    fetchPND94DetailPnd(activeDln, effectiveYear).catch(() => null)
-                ]);
-                tp = Array.isArray(rawTp) ? rawTp[0] : rawTp;
-                cm = Array.isArray(rawCm) ? rawCm[0] : rawCm;
-                pnd = Array.isArray(rawPnd) ? rawPnd[0] : rawPnd;
-            } else if (isPnd91) {
-                const [rawTp, rawCm, rawPnd] = await Promise.all([
-                    fetchPND91DetailTaxpayer(activeDln, effectiveYear).catch(() => null),
-                    fetchPND91DetailCommon(activeDln, effectiveYear).catch(() => null),
-                    fetchPND91DetailPnd(activeDln, effectiveYear).catch(() => null)
-                ]);
-                tp = Array.isArray(rawTp) ? rawTp[0] : rawTp;
-                cm = Array.isArray(rawCm) ? rawCm[0] : rawCm;
-                pnd = Array.isArray(rawPnd) ? rawPnd[0] : rawPnd;
-            } else {
-                const [rawTp, rawCm, rawPnd] = await Promise.all([
-                    fetchPND90DetailTaxpayer(activeDln, effectiveYear).catch(() => null),
-                    fetchPND90DetailCommon(activeDln, effectiveYear).catch(() => null),
-                    fetchPND90DetailPnd(activeDln, effectiveYear).catch(() => null)
-                ]);
-                tp = Array.isArray(rawTp) ? rawTp[0] : rawTp;
-                cm = Array.isArray(rawCm) ? rawCm[0] : rawCm;
-                pnd = Array.isArray(rawPnd) ? rawPnd[0] : rawPnd;
-            }
-
             const [r1, r2, r4, r5, pnd94s] = await Promise.all([
-                fetchRiskIncomeDecrease(taxId, effectiveYear, finalCompareYear).catch(() => null),
-                fetchRiskTaxDecrease(taxId, effectiveYear, finalCompareYear).catch(() => null),
-                fetchRiskSentNotStatus(taxId, effectiveYear, finalCompareYear).catch(() => null),
-                fetchRiskSpouseIncome(taxId, effectiveYear, formType).catch(() => null),
-                isPnd94 ? fetchPND94SentNot90Status(dln, effectiveYear).catch(() => null) : Promise.resolve(null)
+                fetchRiskIncomeDecrease(taxId, actualYear, finalCompareYear).catch(() => null),
+                fetchRiskTaxDecrease(taxId, actualYear, finalCompareYear).catch(() => null),
+                fetchRiskSentNotStatus(taxId, actualYear, finalCompareYear).catch(() => null),
+                fetchRiskSpouseIncome(taxId, actualYear, formType).catch(() => null),
+                isPnd94 ? fetchPND94SentNot90Status(activeDln, actualYear).catch(() => null) : Promise.resolve(null)
             ]);
 
             if (cm) {
@@ -301,30 +321,77 @@ export const UnifiedService = {
                 if (Object.keys(addrLabels).length > 0) cm._labels = addrLabels;
             }
 
+            // Enrichment (8081 data) - ดึงข้อมูลเพิ่มเติมจากระบบ Tracking เพื่อความสมบูรณ์
+            // ข้อมูลส่วนนี้อาจมีหมายเหตุ (remark), รายชื่อทีม (team), และรหัสดึงดูดอื่นๆ
+            let trackData = null;
+            try {
+                if (formType === '91') trackData = await fetchTaxpayer91ByNid(taxId);
+                else if (formType === '94') trackData = await fetchTaxpayer94ByNid(taxId);
+                else trackData = await fetchTaxpayer90ByNid(taxId);
+
+                if (trackData && Array.isArray(trackData)) trackData = trackData[0];
+            } catch (e) {
+                console.warn("[UnifiedService] Enrichment fetch failed", e);
+            }
+
             // กฎเหล็ก: ห้ามผสมข้อมูลจาก Tracking (8081) และ Vision (8080) ในการเรียกดูรายละเอียดเชิงลึก
-            // สร้างออบเจ็กต์พื้นฐานเพื่อป้องกันฟิลด์จาก Tracking API ปนกับข้อมูลจาก Vision API
             const baseForDetail = {
                 taxId: pnd90Item.taxId,
                 dln: activeDln,
-                year: effectiveYear,
+                year: actualYear,
+                pndGroup: trackData?.pndGroup || trackData?.pndgroup || pnd90Item.pndGroup,
+                recNo: trackData?.recNo || trackData?.recno || pnd90Item.recNo,
+                remark: trackData?.remark || pnd90Item.remark,
+                spProject: trackData?.spProject || pnd90Item.spProject,
+                team: trackData?.team,
+                subteam: trackData?.subteam,
+                latLong: trackData?.latLong,
+                filedYearsCount: yearsFiledCount || trackData?.filedYearsCount,
+                filedAllYears: yearsFiledCount >= 3,
+                ops: {
+                    regionCode: trackData?.regionOfficeCode || trackData?.regionofficecode,
+                    stCode: trackData?.stOfficeCode || trackData?.stofficecode,
+                    ssCode: trackData?.ssOfficeCode || trackData?.ssofficecode,
+                },
+                business: {
+                    isicCode: trackData?.isicCode,
+                    isicName: trackData?.isicName,
+                    type: trackData?.busType || trackData?.bustype,
+                },
                 standard: {
-                    name: (pnd90Item.standard?.name || pnd90Item.name || '-'),
+                    name: (pnd90Item.standard?.name || pnd90Item.name || tp?.taxpayerName || '-'),
                     dln: activeDln,
-                    year: effectiveYear
+                    year: actualYear
                 }
             };
 
-            const enrichedItem = isPnd94 ? mapPND94Enriched(baseForDetail, tp, cm, pnd) :
-                isPnd91 ? mapPND91Enriched(baseForDetail, tp, cm, pnd, comparePnd) :
-                    mapPND90Enriched(baseForDetail, tp, cm, pnd, comparePnd);
+            // ดึงชื่อหน่วยงาน (Office Names) ถ้ามีรหัสระบุ
+            try {
+                const ops = baseForDetail.ops;
+                const [regName, stName, ssName] = await Promise.all([
+                    ops.regionCode ? OfficeService.getOfficeName('region', ops.regionCode) : null,
+                    ops.stCode ? OfficeService.getOfficeName('st', ops.stCode) : null,
+                    ops.ssCode ? OfficeService.getOfficeName('ss', ops.ssCode) : null
+                ]);
+                if (regName) ops.regionName = regName;
+                if (stName) ops.stName = stName;
+                if (ssName) ops.ssName = ssName;
+            } catch (officeError) {
+                console.warn("[UnifiedService] Office name resolution failed", officeError);
+            }
+
+            // ผสมข้อมูลจากทั้งสองแหล่งเพื่อให้ Mapper สามารถสร้างประวัติย้อนหลัง (y64-y69) ได้ครบถ้วน
+            const combinedTp = { ...tp, ...trackData };
+
+            const enrichedItem = isPnd94 ? mapPND94Enriched(baseForDetail, combinedTp, cm, pnd) :
+                isPnd91 ? mapPND91Enriched(baseForDetail, combinedTp, cm, pnd, comparePnd) :
+                    mapPND90Enriched(baseForDetail, combinedTp, cm, pnd, comparePnd);
 
             enrichedItem.risks = {
-                incomeDecrease: r1 === true || r1 === 'true',
-                taxAmtDecrease: r2 === true || r2 === 'true',
-                sentBaseNotCompare: r4 === true || r4 === 'true',
-                spouseHasIncome: r5 === true || r5 === 'true',
                 sent94not90: pnd94s === true || pnd94s === 'true',
-                compareYear: finalCompareYear
+                compareYear: finalCompareYear,
+                requestedYear: effectiveYear,
+                actualYear: actualYear
             };
 
             cacheStore.unified.set(cacheKey, enrichedItem);
@@ -332,7 +399,7 @@ export const UnifiedService = {
             return enrichedItem;
         } catch (error) {
             console.error(`[UnifiedService] Error enriching profile:`, error);
-            return { ...pnd90Item, isFullyEnriched: true, enrichmentError: error.message };
+            throw error;
         }
     },
 

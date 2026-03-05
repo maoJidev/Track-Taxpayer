@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertCircle, CheckCircle } from 'lucide-react';
+import { toThaiYear } from '../../main/utils/commonMapper';
 
 /**
  * Reusable Risk Assessment Component for PND90, 91, 94
@@ -9,8 +10,9 @@ import { AlertCircle, CheckCircle } from 'lucide-react';
  * @param {string} compareYear - Comparison tax year (e.g. year - 1)
  */
 const RiskAssessment = ({ risks, formCode, year, compareYear }) => {
-    // Default to previous year if not provided
-    const cmpYear = compareYear || String(parseInt(year || "67") - 1);
+    // Normalize years to 4-digit Thai format
+    const displayYear = toThaiYear(year);
+    const displayCompareYear = toThaiYear(compareYear || String(parseInt(year || "67") - 1));
 
     if (!risks) {
         return (
@@ -30,7 +32,7 @@ const RiskAssessment = ({ risks, formCode, year, compareYear }) => {
         activeRisks.push({
             id: 'risk1',
             title: 'ความเสี่ยงเงินได้ลดลง (Risk 1)',
-            description: `${formCode} ปี ${year} รายงานยอดเงินได้น้อยกว่าปี ${cmpYear}`,
+            description: `${formCode} ปี ${displayYear} รายงานยอดเงินได้น้อยกว่าปี ${displayCompareYear}`,
             variant: 'danger'
         });
     }
@@ -39,7 +41,7 @@ const RiskAssessment = ({ risks, formCode, year, compareYear }) => {
         activeRisks.push({
             id: 'risk2',
             title: 'ความเสี่ยงยอดภาษีลดลง (Risk 2)',
-            description: `${formCode} ปี ${year} มียอดภาษีที่ชำระน้อยกว่าปี ${cmpYear}`,
+            description: `${formCode} ปี ${displayYear} มียอดภาษีที่ชำระน้อยกว่าปี ${displayCompareYear}`,
             variant: 'danger'
         });
     }
@@ -48,7 +50,7 @@ const RiskAssessment = ({ risks, formCode, year, compareYear }) => {
         activeRisks.push({
             id: 'risk5_2',
             title: 'ความเสี่ยงยื่นแบบไม่สม่ำเสมอ (Risk 5)',
-            description: `ยื่นแบบปี ${year} แต่ไม่มีข้อมูลการยื่นในปี ${cmpYear}`,
+            description: `ยื่นแบบปี ${displayYear} แต่ไม่มีข้อมูลการยื่นในปี ${displayCompareYear}`,
             variant: 'warning'
         });
     }

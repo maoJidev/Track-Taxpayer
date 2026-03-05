@@ -1,9 +1,16 @@
-import apiClient from "../../../main/services/client";
+import apiClient, { authApiClient } from "../../../main/services/client";
 
-// APIs สำหรับระบบ ภ.ง.ด. 91 (Vision API)
+// APIs สำหรับระบบ ภ.ง.ด. 91 (Vision API) 
 export async function fetchPND91ByNid(nid, year = "67", params = {}) {
     if (!nid || nid === '-') return null;
     const response = await apiClient.get(`/api/pnd91/${year}/taxpayer/findbytxpnid/${encodeURIComponent(nid)}`, { params });
+    return response.data;
+}
+
+// APIs สำหรับระบบ Tracking (จาก port 8081)
+export async function fetchTaxpayer91ByNid(nid) {
+    if (!nid || nid === '-') return null;
+    const response = await authApiClient.get(`/api/taxpayer91/search/nid/${nid}`);
     return response.data;
 }
 

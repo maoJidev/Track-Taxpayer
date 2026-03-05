@@ -30,7 +30,9 @@ export function mapPND94ListItem(raw) {
         standard: {
             name: fullName,
             dln: raw.dln || '-',
+            year: year,
             financials: {
+                totalIncome,
                 taxPayable,
                 netTax: Number(getVal(raw, MAPPER_CONFIGS.common.financials.tax) || 0)
             }
