@@ -11,6 +11,14 @@ import {
 import RiskAssessment from '../../features/taxpayer/components/RiskAssessment';
 import TaxpayerNotFound from '../../features/main/components/TaxpayerNotFound';
 
+// นำเข้า Shared Components ภายนอกเพื่อลดความซ้ำซ้อนใน Layout หลัก
+import TaxpayerPersonalInfo from '../../features/taxpayer/components/detail/TaxpayerPersonalInfo';
+import TaxpayerOperationalInfo from '../../features/taxpayer/components/detail/TaxpayerOperationalInfo';
+import TaxpayerBusinessInfo from '../../features/taxpayer/components/detail/TaxpayerBusinessInfo';
+import TaxpayerAddressInfo from '../../features/taxpayer/components/detail/TaxpayerAddressInfo';
+import TaxpayerSpouseInfo from '../../features/taxpayer/components/detail/TaxpayerSpouseInfo';
+import FilingHistoryTable from '../../features/taxpayer/components/detail/FilingHistoryTable';
+
 const TaxpayerDetail94 = () => {
     const { taxId: taxIdParam, dln: dlnParam, year: yearParamUrl } = useParams();
     const navigate = useNavigate();
@@ -184,170 +192,19 @@ const TaxpayerDetail94 = () => {
                         <div className="col-lg-7">
 
                             {/* Personal Info */}
-                            <section className="mb-5">
-                                <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                    <User size={20} className="me-2" /> ข้อมูลรายละเอียดผู้เสียภาษี
-                                </h5>
-                                <div className="row g-3">
-                                    <div className="col-sm-6">
-                                        <label className="small text-secondary fw-bold mb-1">ชื่อ - นามสกุล</label>
-                                        <div className="p-2 bg-light rounded text-dark border-start border-3 border-navy">{standard.name}</div>
-                                    </div>
-                                    <div className="col-sm-2">
-                                        <label className="small text-secondary fw-bold mb-1">กลุ่ม PND</label>
-                                        <div className="p-2 bg-light rounded text-dark text-center">{data.pndGroup || '-'}</div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <label className="small text-secondary fw-bold mb-1">เลขประจำตัวผู้เสียภาษี (TIN)</label>
-                                        <div className="p-2 bg-light rounded text-dark font-monospace">{data.tin || '-'}</div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <label className="small text-secondary fw-bold mb-1">เพศ</label>
-                                        <div className="p-2 bg-light rounded text-dark">{standard.labels?.sex || '-'}</div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <label className="small text-secondary fw-bold mb-1">สถานะการยื่น</label>
-                                        <div className="p-2 bg-light rounded text-dark">{standard.labels?.filingStatus || '-'}</div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <label className="small text-secondary fw-bold mb-1">เลขที่ใบเสร็จ (Rec. No)</label>
-                                        <div className="p-2 bg-light rounded text-dark">{data.recNo || '-'}</div>
-                                    </div>
-                                    <div className="col-sm-3">
-                                        <label className="small text-secondary fw-bold mb-1">สถานภาพสมรส</label>
-                                        <div className="p-2 bg-light rounded text-dark">{standard.labels?.marital || '-'}</div>
-                                    </div>
-                                </div>
-                            </section>
+                            <TaxpayerPersonalInfo standard={standard} data={data} />
 
                             {/* Team & Area Info */}
-                            <section className="mb-5">
-                                <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                    <Users size={20} className="me-2" /> ข้อมูลทีมตรวจสอบและพื้นที่
-                                </h5>
-                                <div className="row g-3">
-                                    <div className="col-sm-6">
-                                        <label className="small text-secondary fw-bold mb-1">ทีม (Team)</label>
-                                        <div className="p-2 bg-light rounded text-dark border-start border-3 border-info">{data.ops?.team || 'ไม่ระบุทีม'}</div>
-                                    </div>
-                                    <div className="col-sm-6">
-                                        <label className="small text-secondary fw-bold mb-1">ทีมย่อย (Sub Team)</label>
-                                        <div className="p-2 bg-light rounded text-dark">{data.ops?.subteam || 'ไม่ระบุทีมย่อย'}</div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <div className="p-2 bg-light bg-opacity-50 rounded text-center">
-                                            <div className="text-secondary small fw-bold">ภาค (Region)</div>
-                                            <div className="fw-bold">{data.ops?.regionName || data.ops?.regionCode || '-'}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <div className="p-2 bg-light bg-opacity-50 rounded text-center">
-                                            <div className="text-secondary small fw-bold">พื้นที่ (ST)</div>
-                                            <div className="fw-bold">{data.ops?.stName || data.ops?.stCode || '-'}</div>
-                                        </div>
-                                    </div>
-                                    <div className="col-sm-4">
-                                        <div className="p-2 bg-light bg-opacity-50 rounded text-center">
-                                            <div className="text-secondary small fw-bold">สาขา (SS)</div>
-                                            <div className="fw-bold">{data.ops?.ssName || data.ops?.ssCode || '-'}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
+                            <TaxpayerOperationalInfo data={data} />
 
                             {/* Business & ISIC Info */}
-                            <section className="mb-5">
-                                <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                    <Briefcase size={20} className="me-2" /> ข้อมูลกิจการและสถานประกอบการ (ISIC)
-                                </h5>
-                                <div className="card border-0 bg-light rounded-3 p-4 shadow-sm border-top border-5 border-info">
-                                    <div className="row g-4">
-                                        <div className="col-md-7">
-                                            <span className="text-secondary small d-block mb-1">ชื่อร้านค้า / สถานประกอบการ</span>
-                                            <span className="fw-bold fs-5 text-navy">{data.business?.shopName || '-'}</span>
-                                        </div>
-                                        <div className="col-md-5 text-md-end">
-                                            <span className="text-secondary small d-block mb-1">สถานะ VAT</span>
-                                            <span className={`badge ${data.business?.vatStatus ? 'bg-info' : 'bg-secondary'}`}>
-                                                {data.business?.vatStatus || 'ไม่ได้จดทะเบียน'}
-                                            </span>
-                                        </div>
-                                        <div className="col-md-12">
-                                            <span className="text-secondary small d-block mb-1">ประเภทธุรกิจ (ISIC)</span>
-                                            <div className="d-flex align-items-center gap-2">
-                                                <span className="badge bg-navy">{data.business?.isicCode}</span>
-                                                <span className="fw-bold">{data.business?.isicName || data.business?.type || '-'}</span>
-                                            </div>
-                                        </div>
-                                        {data.business?.shopAddress && (
-                                            <div className="col-md-12">
-                                                <span className="text-secondary small d-block mb-1">ที่อยู่สถานประกอบการ</span>
-                                                <div className="p-2 bg-white rounded border">{data.business?.shopAddress}</div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </section>
+                            <TaxpayerBusinessInfo data={data} />
 
                             {/* Address Info */}
-                            <section className="mb-5">
-                                <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                    <MapPin size={20} className="me-2" /> ข้อมูลทั่วไปและสถานที่ติดต่อ
-                                </h5>
-                                <div className="card border-0 bg-light rounded-3 p-4">
-                                    <div className="row g-3">
-                                        <div className="col-sm-6">
-                                            <span className="text-secondary small d-block mb-1">ประเภทการยื่น</span>
-                                            <span className="fw-bold">{standard.labels?.submissionType || '-'}</span>
-                                        </div>
-                                        <div className="col-sm-3">
-                                            <span className="text-secondary small d-block mb-1">สถานะการยื่น</span>
-                                            <span className="fw-bold">{standard.labels?.submissionStatus || '-'}</span>
-                                        </div>
-                                        <div className="col-sm-3 text-sm-end">
-                                            <span className="text-secondary small d-block mb-1">วันที่ยื่นแบบ</span>
-                                            <span className="fw-bold">{standard.effDate || '-'}</span>
-                                        </div>
-                                        <div className="col-12 mt-3 pt-3 border-top">
-                                            <div className="d-flex justify-content-between align-items-center mb-2">
-                                                <span className="text-secondary small">ที่อยู่ปัจจุบัน</span>
-                                                {standard.address && standard.address !== '-' && (
-                                                    <a
-                                                        href={data.latLong ? `https://www.google.com/maps?q=${data.latLong}` : `https://www.google.com/maps?q=${encodeURIComponent(standard.address)}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-primary small text-decoration-none d-flex align-items-center"
-                                                    >
-                                                        ดูบนแผนที่ <ExternalLink size={12} className="ms-1" />
-                                                    </a>
-                                                )}
-                                            </div>
-                                            <div className="bg-white p-3 rounded border text-dark shadow-sm">
-                                                {standard.address || 'ไม่พบข้อมูลที่อยู่'}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
+                            <TaxpayerAddressInfo standard={standard} data={data} />
 
                             {/* Spouse Info */}
-                            {standard.spouse && (
-                                <section>
-                                    <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                        <User size={20} className="me-2" /> ข้อมูลรายละเอียดคู่สมรส
-                                    </h5>
-                                    <div className="row g-3">
-                                        <div className="col-sm-12">
-                                            <label className="small text-secondary fw-bold mb-1">ชื่อ - นามสกุล (คู่สมรส)</label>
-                                            <div className="p-2 bg-light rounded text-dark border-start border-navy border-3">{standard.spouse.name}</div>
-                                        </div>
-                                        <div className="col-sm-12">
-                                            <label className="small text-secondary fw-bold mb-1">เลขประจำตัวผู้เสียภาษี (คู่สมรส)</label>
-                                            <div className="p-2 bg-light rounded text-dark font-monospace">{standard.spouse.nid}</div>
-                                        </div>
-                                    </div>
-                                </section>
-                            )}
+                            <TaxpayerSpouseInfo standard={standard} />
                         </div>
 
                         {/* RIGHT COLUMN */}
@@ -386,47 +243,7 @@ const TaxpayerDetail94 = () => {
                             </section>
 
                             {/* Filing History Table */}
-                            <section className="mb-5">
-                                <h5 className="text-navy fw-bold mb-4 d-flex align-items-center">
-                                    <LayoutGrid size={20} className="me-2" /> ประวัติการยื่นแบบรายปี
-                                </h5>
-                                <div className="table-responsive rounded-3 border bg-white shadow-sm">
-                                    <table className="table table-hover align-middle mb-0" style={{ fontSize: '0.8rem' }}>
-                                        <thead className="bg-navy text-white">
-                                            <tr>
-                                                <th className="py-2 px-2 text-center" style={{ width: '80px' }}>ปีภาษี</th>
-                                                <th className="py-2 px-2 text-end">เงินได้</th>
-                                                <th className="py-2 px-2 text-end">ค่าลดหย่อน</th>
-                                                <th className="py-2 px-2 text-end">ภาษีที่ชำระ</th>
-                                                <th className="py-2 px-2 text-center" style={{ width: '120px' }}>สถานะ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {Object.keys(data.history || {}).sort((a, b) => b - a).map(yr => {
-                                                const record = data.history[yr];
-                                                return (
-                                                    <tr key={yr}>
-                                                        <td className="px-2 py-2 text-center fw-bold">{record.year}</td>
-                                                        <td className="px-2 py-2 text-end font-monospace">{formatCurrency(record.income)}</td>
-                                                        <td className="px-2 py-2 text-end font-monospace text-secondary">{formatCurrency(record.allowance)}</td>
-                                                        <td className="px-2 py-2 text-end font-monospace text-navy fw-bold">{formatCurrency(record.tax)}</td>
-                                                        <td className="px-2 py-2 text-center">
-                                                            <span className={`badge ${record.income > 0 ? 'bg-success bg-opacity-10 text-success border border-success' : 'bg-light text-muted border'} w-100`}>
-                                                                {record.income > 0 ? 'ยื่นแบบแล้ว' : 'ไม่พบข้อมูล'}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                            {Object.keys(data.history || {}).length === 0 && (
-                                                <tr>
-                                                    <td colSpan="4" className="text-center py-4 text-muted fst-italic">ไม่พบประวัติการยื่นแบบย้อนหลัง</td>
-                                                </tr>
-                                            )}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
+                            <FilingHistoryTable data={data} />
 
                             {/* Tax Comparison Table */}
                             <section className="mb-5">

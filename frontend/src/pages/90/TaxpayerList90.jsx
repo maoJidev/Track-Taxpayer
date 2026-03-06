@@ -53,10 +53,37 @@ const TaxpayerList90 = () => {
 
     const shouldShowOfficeSelector = !!user;
 
+    const [isNavigating, setIsNavigating] = useState(false);
+
     // จัดการการนำทางไปยังหน้าละเอียดเมื่อผู้ใช้คลิกที่แถวในตาราง
-    const handleRowClick = (item) => {
+    const handleRowClick = async (item) => {
+        if (isNavigating) return;
         const taxId = item.taxId;
-        const dln = item.dln || '-';
+        let dln = item.dln;
+
+        // ถ้าไม่มี DLN ให้ทำการ Bridging ดึงจาก NID ผ่าน Vision API ก่อนเข้าไปหน้า Detail
+        if (!dln || dln === '-') {
+            setIsNavigating(true);
+            try {
+                // We use dynamic import to avoid circular dependency in case it's an issue, 
+                // or just import fetchTaxpayerByNid from Mainlist
+                const { fetchTaxpayerByNid } = await import('../../features/main/api/Mainlist.js');
+                const pndData = await fetchTaxpayerByNid(taxId, year || '67');
+                const matchedData = Array.isArray(pndData) ? pndData[0] : pndData;
+
+                if (matchedData && (matchedData.dln || matchedData.DLN)) {
+                    dln = matchedData.dln || matchedData.DLN;
+                } else {
+                    dln = '-';
+                }
+            } catch (err) {
+                console.error("Bridging failed before navigation:", err);
+                dln = '-';
+            } finally {
+                setIsNavigating(false);
+            }
+        }
+
         if (taxId) {
             navigate(`/taxpayers/pnd90/detail/${encodeParam(taxId)}/${encodeParam(dln)}/${year || '67'}`);
         }

@@ -80,8 +80,16 @@ const OfficeSelector = ({
         try {
             const hierarchy = await OfficeService.getOfficeHierarchy(userRole, userOffices);
             setRegions(hierarchy.regions);
-            setSTOffices(hierarchy.stOffices);
-            setSSOffices(hierarchy.ssOffices);
+
+            // Only overwrite if the hierarchy query actually returned data
+            // This prevents race conditions where specific hook useEffects load data,
+            // but this initialization function overwrites it with an empty array.
+            if (hierarchy.stOffices && hierarchy.stOffices.length > 0) {
+                setSTOffices(hierarchy.stOffices);
+            }
+            if (hierarchy.ssOffices && hierarchy.ssOffices.length > 0) {
+                setSSOffices(hierarchy.ssOffices);
+            }
         } catch (err) {
             console.error('[OfficeSelector] Failed to load office hierarchy:', err);
             setError('ไม่สามารถโหลดข้อมูลสำนักงานได้');
