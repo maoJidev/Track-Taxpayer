@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { AuthProvider } from "./features/auth/contexts/AuthContext";
+import { AuthProvider } from "./contexts/AuthContext";
 import MainLayout from "./layouts/MainLayout";
 import Settings from "./pages/Settings";
 import TaxpayerList90 from "./pages/90/TaxpayerList90";
@@ -8,7 +8,7 @@ import TaxpayerList94 from "./pages/94/TaxpayerList94";
 import TaxpayerDetail94 from "./pages/94/TaxpayerDetail94";
 import TaxpayerList91 from "./pages/91/TaxpayerList91";
 import TaxpayerDetail91 from "./pages/91/TaxpayerDetail91";
-import Login from "./features/auth/components/Login";
+import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import OfficeManagement from "./pages/offices/OfficeManagement";
 

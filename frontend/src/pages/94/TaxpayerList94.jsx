@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { encodeParam } from '../../features/main/utils/urlUtils';
 import { useTaxpayer94List } from '../../features/taxpayer/pnd94/hooks/useTaxpayer94List';
-import { useAuth } from '../../features/auth/contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import FilterBar from '../../features/main/components/FilterBar';
 import Pagination from '../../features/main/components/Pagination';
 import SkeletonRow from '../../features/main/components/SkeletonRow';

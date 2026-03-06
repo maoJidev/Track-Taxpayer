@@ -1,6 +1,6 @@
 import React from "react";
 import { User, Mail, Phone, Shield, MapPin, Briefcase } from "lucide-react";
-import { useAuth } from "../features/auth/contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const Profile = () => {
     const { user, loading } = useAuth();

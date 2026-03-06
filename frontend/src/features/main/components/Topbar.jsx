@@ -1,4 +1,4 @@
-import { useAuth } from "../../auth/contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { User } from 'lucide-react';
 
 const Topbar = () => {
